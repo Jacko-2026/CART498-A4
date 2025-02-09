@@ -3,48 +3,40 @@ import openai
 import os
 from dotenv import load_dotenv
 
-load_dotenv()  # Load environment variables from .env
+# Load environment variables from .env file
+load_dotenv()
 
+# Initialize Flask app
 app = Flask(__name__)
-openai.api_key = os.getenv("OPENAI_API_KEY")  # Securely load API key
 
-# Function to generate the Jungian interpretation
-def generate_interpretation(dream_description):
-    prompt = f"Interpret the following dream based on Carl Jung's psychological theories, focusing on symbolism, archetypes, and the unconscious mind: {dream_description}"
-    try:
-        response = openai.Completion.create(
-            model="text-davinci-003",  # You can use other models like GPT-4
-            prompt=prompt,
-            max_tokens=300,
-            temperature=0.7
-        )
-        return response.choices[0].text.strip()
-    except Exception as e:
-        return f"Error in interpretation: {str(e)}"
-
-# Function to generate the dream-related image using DALL-E
-def generate_dream_image(dream_description):
-    try:
-        response = openai.Image.create(
-            prompt=dream_description,
-            n=1,
-            size="1024x1024"
-        )
-        return response.data[0].url
-    except Exception as e:
-        return f"Error generating image: {str(e)}"
+# Load OpenAI API key securely from the environment variable
+openai.api_key = os.getenv("OPENAI_API_KEY")
 
 @app.route("/", methods=["GET", "POST"])
 def index():
-    result = None
-    image_url = None
+    result = None  # Variable to store the generated interpretation
     if request.method == "POST":
-        prompt = request.form["prompt"]
-        # Generate Jungian interpretation
-        result = generate_interpretation(prompt)
-        # Generate corresponding image
-        image_url = generate_dream_image(prompt)
-    return render_template("index.html", result=result, image_url=image_url)
+        prompt = request.form["prompt"]  # Get user input from form
+        try:
+            # Call OpenAI API for interpretation of the dream description
+            response = openai.chat.completions.create(
+                model="gpt-4o-mini",  # Specify OpenAI model
+                messages=[{
+                    "role": "system", "content": "You are an expert in Jungian dream analysis."
+                }, {
+                    "role": "user", "content": prompt
+                }],
+                temperature=0.7,
+                max_tokens=150
+            )
+            # Retrieve and store the generated interpretation from the response
+            result = response.choices[0].message.content
+        except Exception as e:
+            result = f"Error: {str(e)}"  # Handle any API errors
 
+    # Render the HTML template and pass the interpretation result
+    return render_template("index.html", result=result)
+
+# Run the app locally (Step 3)
 if __name__ == "__main__":
-    app.run(debug=True)  # Run locally for testing
+    app.run(debug=True)  # Run the app locally for testing
