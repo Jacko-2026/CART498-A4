@@ -22,7 +22,6 @@ Edit
 "Create an image of a wise old man standing in a forest, symbolic of the collective unconscious, with mystical light surrounding him."
 User Guide
 How to Use the Web App:
-Access the Web App: Open your browser and navigate to the deployed web app (e.g., http://127.0.0.1:5000/ for local testing).
 Input Your Dream: In the provided text box, type a description of your dream. Try to be as detailed as possible, including any prominent figures, actions, or emotions.
 Submit Your Dream: Click the "Submit" button to send your dream description to the system for analysis.
 View the Interpretation: Once processed, the web app will display a Jungian-inspired interpretation of your dream. The analysis will focus on the archetypes and unconscious symbols present.
